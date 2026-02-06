@@ -1,4 +1,4 @@
-# Super Jam Boy
+# Super Jam Girl
 The best game you'll never want to play!
 
 ## Build Instructions
