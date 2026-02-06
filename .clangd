@@ -1,0 +1,6 @@
+CompileFlags:
+  Remove:
+    - -mword-relocations
+
+Diagnostics:
+  Suppress: '*'
