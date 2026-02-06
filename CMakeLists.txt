@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(SuperJamBoy)
+project(SuperJamGirl)
 
 set(CMAKE_CXX_STANDARD 23)
 
@@ -18,7 +18,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 )
 
 ctr_generate_smdh(${PROJECT_NAME}.smdh
-        NAME "Super Jam Boy"
+        NAME "Super Jam Girl"
         DESCRIPTION "v0.0.1"
         AUTHOR "Haj Dev"
 )
