@@ -6,7 +6,6 @@ int main() {
 
     while (window.isOpen()) {
         window.clear(dl::TOP_SCREEN, dl::Color(0, 0, 0));
-        window.draw(rect);
         window.display();
 
         window.clear(dl::BOTTOM_SCREEN, dl::Color(0, 0, 0));
