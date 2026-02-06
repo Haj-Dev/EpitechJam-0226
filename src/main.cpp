@@ -1,16 +1,13 @@
-#include <Dualie/Dualie.hpp>
-#include "System.hpp"
+//#include "System.hpp"
+#include "game.hpp"
 
 int main() {
-    dl::RenderWindow window;
 
-    while (window.isOpen()) {
-        window.clear(dl::TOP_SCREEN, dl::Color(0, 0, 0));
-        window.display();
+    //maybe parse args
 
-        window.clear(dl::BOTTOM_SCREEN, dl::Color(0, 0, 0));
-        window.display();
-    }
+    game game;
+
+    game.runGame();
 
     return 0;
 }
