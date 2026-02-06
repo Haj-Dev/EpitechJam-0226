@@ -22,7 +22,6 @@ int main() {
     circle.setPosition(BOTTOM_WIDTH / 2, BOTTOM_HEIGHT / 2);
 
     while (window.isOpen()) {
-
         window.clear(dl::TOP_SCREEN, dl::Color(200, 200, 200));
         window.draw(rect);
         window.display();
