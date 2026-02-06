@@ -4,8 +4,6 @@
 #include <fstream>
 #include <string>
 
-Level::Level() = default;
-
 Level::Level(const std::string& path) {
     loadFromFile(path);
 }

@@ -24,7 +24,6 @@ class Level {
         Objective
     };
 
-    Level();
     explicit Level(const std::string& path);
 
     bool                        loadFromFile(const std::string& path);
