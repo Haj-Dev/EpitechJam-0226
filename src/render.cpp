@@ -6,7 +6,7 @@ render::~render() {}
 
 void render::renderGame() {
 
-    //perhaps put top and bottom screen in their repective functions
+    //perhaps put top and bottom screen in their respective functions
     window.clear(dl::TOP_SCREEN, dl::Color(0, 100, 0));
     window.display();
 
