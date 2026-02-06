@@ -2,6 +2,7 @@
 
 #include "logic.hpp"
 #include "render.hpp"
+#include "player.hpp"
 
 class game {
   public:
@@ -12,4 +13,5 @@ class game {
   private:
     logic  _logic;
     render _render;
+    player _player;
 };
