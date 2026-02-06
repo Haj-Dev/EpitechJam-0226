@@ -1,5 +1,5 @@
 #include <Dualie/Dualie.hpp>
-#include "System.h"
+#include "System.hpp"
 
 int main() {
     dl::RenderWindow window;

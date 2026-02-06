@@ -25,4 +25,5 @@ ctr_generate_smdh(${PROJECT_NAME}.smdh
 
 ctr_create_3dsx(${PROJECT_NAME}
         SMDH ${PROJECT_NAME}.smdh
+        ROMFS romfs
 )
