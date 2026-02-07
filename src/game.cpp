@@ -16,8 +16,6 @@ void game::runGame() {
         }
         _clock.restart();
 
-        _scene->handleInput();
-
         _scene->update(1 / 60);
 
         _scene->render(_window);
