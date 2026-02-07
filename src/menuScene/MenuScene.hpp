@@ -22,4 +22,6 @@ class MenuScene : virtual public AScene {
   private:
     dl::SpriteSheet _background_bottom;
     dl::Sprite      _background_bottom_sprite;
+    dl::SpriteSheet _background_top;
+    dl::Sprite      _background_top_sprite;
 };
