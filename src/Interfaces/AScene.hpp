@@ -13,7 +13,9 @@ class AScene : public IScene {
   public:
     ~AScene() override = default;
 
-    void onEnter() override     = 0;
-    void onExit() override      = 0;
-    void handleInput() override = 0;
+    void onEnter() override        = 0;
+    void onExit() override         = 0;
+    void handleInput() override    = 0;
+    void update(float dt) override = 0;
+    void render() override         = 0;
 };
