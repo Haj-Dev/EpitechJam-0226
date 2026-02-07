@@ -2,7 +2,11 @@
 #include "menuScene/MenuScene.hpp"
 
 game::game() {
+    _music.loadFromFile("romfs:/SuperJamGirl.opus");
+    _music.setLooping(true);
+    _music.play();
     _scene = std::make_unique<MenuScene>();
+    _scene->onEnter();
 }
 
 game::~game() {}

@@ -14,6 +14,7 @@ class game {
   private:
     dl::RenderWindow        _window;
     dl::Clock               _clock;
+    dl::Music               _music;
     std::unique_ptr<IScene> _scene;
     player                  _player;
 };

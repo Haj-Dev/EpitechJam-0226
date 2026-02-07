@@ -18,4 +18,8 @@ class MenuScene : virtual public AScene {
     void onExit() override;
     void update(float dt) override;
     void render(dl::RenderWindow& window) override;
+
+  private:
+    dl::SpriteSheet _background_bottom;
+    dl::Sprite      _background_bottom_sprite;
 };
