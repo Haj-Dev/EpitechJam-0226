@@ -1,15 +1,29 @@
 #include "game.hpp"
+#include "menuScene/MenuScene.hpp"
 
-game::game() {}
+game::game() {
+    //_scene = new (MenuScene);
+}
 
 game::~game() {}
 
 void game::runGame() {
-    while (_render.isWindowOpen()) {
-        //some sort of clock or time control logic here
 
-        _logic.runLogicTick();
+    _clock.restart();
+    while (isWindowOpen()) {
+        while (_clock.getElapsedTime().asSeconds() < 1 / 60) {
+            //wait
+        }
+        _clock.restart();
 
-        _render.renderGame();
+        //_scene.handleInput();
+
+        //_scene->update(1 / 60);
+
+        //_scene->render(_window);
     }
+}
+
+bool game::isWindowOpen() {
+    return (_window.isOpen());
 }

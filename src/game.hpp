@@ -1,7 +1,7 @@
 #pragma once
 
-#include "logic.hpp"
-#include "render.hpp"
+#include <Dualie/Dualie.hpp>
+#include "Interfaces/IScene.hpp"
 #include "player.hpp"
 
 class game {
@@ -9,9 +9,11 @@ class game {
     game();
     ~game();
     void runGame();
+    bool isWindowOpen();
 
   private:
-    logic  _logic;
-    render _render;
-    player _player;
+    dl::RenderWindow        _window;
+    dl::Clock               _clock;
+    std::unique_ptr<IScene> _scene;
+    player                  _player;
 };
