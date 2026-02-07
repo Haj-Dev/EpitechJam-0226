@@ -16,7 +16,7 @@ class MenuScene : virtual public AScene {
 
     void onEnter() override;
     void onExit() override;
-    //void handleInput() override;
+    void handleInput() override;
     void update(float dt) override;
-    void render(dl::RenderWindow window) override;
+    void render(dl::RenderWindow& window) override;
 };

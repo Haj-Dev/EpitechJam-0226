@@ -2,7 +2,7 @@
 #include "menuScene/MenuScene.hpp"
 
 game::game() {
-    //_scene = new (MenuScene);
+    _scene = std::make_unique<MenuScene>();
 }
 
 game::~game() {}
@@ -16,11 +16,11 @@ void game::runGame() {
         }
         _clock.restart();
 
-        //_scene.handleInput();
+        _scene->handleInput();
 
-        //_scene->update(1 / 60);
+        _scene->update(1 / 60);
 
-        //_scene->render(_window);
+        _scene->render(_window);
     }
 }
 
