@@ -29,6 +29,7 @@ class LevelScene : virtual public AScene {
     // Level data and rendering
     Level           _level;
     LevelRenderer   _levelRenderer;
+    std::string     _levelPath;
 
     // Player rendering
     dl::SpriteSheet _playerSheet;
@@ -55,6 +56,15 @@ class LevelScene : virtual public AScene {
     dl::Text        _pauseQuitText;
     static constexpr size_t PAUSE_MENU_COUNT = 3;
 
+    // Pause platforms (text as physical platforms on top screen)
+    struct PausePlatform {
+        dl::Vector2f position;
+        float width;
+        float height;
+    };
+    std::vector<PausePlatform> _pausePlatforms;
+    dl::Text        _pauseInfoText;
+
     // Helper methods
     void respawnPlayer();
     bool checkDeadBodyCollision(const dl::Vector2f& pos, float& deadBodyY);
@@ -64,6 +74,7 @@ class LevelScene : virtual public AScene {
     bool checkBlockCollisionHorizontal(const dl::Vector2f& pos, float velocityX, float& correctedX);
     bool checkDeadBodyCollisionHorizontal(const dl::Vector2f& pos, float velocityX, float& correctedX);
     void addDeadBody(const dl::Vector2f& pos);
+    bool checkPausePlatformBelow(const dl::Vector2f& pos, float& platformY);
 
     // Game constants
     static constexpr float GRAVITY = 20.0f;

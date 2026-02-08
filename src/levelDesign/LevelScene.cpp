@@ -7,6 +7,7 @@
 LevelScene::LevelScene(const std::string& levelPath)
     : _level(levelPath),
       _levelRenderer(_level),
+      _levelPath(levelPath),
       _playerAnimation(4, 0.8f),  // 4 frames, 0.8s per frame
       _playerPos(0, 0),
       _playerVelocity(0, 0),
@@ -17,7 +18,8 @@ LevelScene::LevelScene(const std::string& levelPath)
       _pauseTitleText(_pauseTextBuffer),
       _pauseResumeText(_pauseTextBuffer),
       _pauseLevelSelectText(_pauseTextBuffer),
-      _pauseQuitText(_pauseTextBuffer) {
+      _pauseQuitText(_pauseTextBuffer),
+      _pauseInfoText(_pauseTextBuffer) {
 }
 
 void LevelScene::onEnter() {
@@ -68,6 +70,22 @@ void LevelScene::onEnter() {
     _pauseQuitText.setString("Main Menu");
     _pauseQuitText.setPosition(dl::Vector2f(100, 140));
     _pauseQuitText.setScale(dl::Vector2f(0.9f, 0.9f));
+
+    // Setup pause platforms (level-specific)
+    // Collision boxes sized to match text at 0.5 scale
+    _pausePlatforms.clear();
+    if (_levelPath.find("PausePlatform") != std::string::npos) {
+        _pausePlatforms.push_back({dl::Vector2f(80.0f, 128.0f), 30.0f, 8.0f});
+        _pausePlatforms.push_back({dl::Vector2f(160.0f, 96.0f), 55.0f, 8.0f});
+        _pausePlatforms.push_back({dl::Vector2f(270.0f, 128.0f), 42.0f, 8.0f});
+
+    }
+
+    // Info text for platform pause mode
+    _pauseInfoText.setString("START:Resume  B:Back");
+    _pauseInfoText.setPosition(dl::Vector2f(30, 100));
+    _pauseInfoText.setScale(dl::Vector2f(0.8f, 0.8f));
+    _pauseInfoText.setColor(dl::Color(200, 200, 200));
 }
 
 void LevelScene::onExit() {
@@ -246,6 +264,19 @@ void LevelScene::addDeadBody(const dl::Vector2f& pos) {
     _deadBodySprites.push_back(deadSprite);
 }
 
+bool LevelScene::checkPausePlatformBelow(const dl::Vector2f& pos, float& platformY) {
+    // One-way platforms: skip when moving upward (can jump through from below)
+    if (_playerVelocity.y < 0) return false;
+    for (const auto& plat : _pausePlatforms) {
+        if (pos.x + 16 > plat.position.x && pos.x < plat.position.x + plat.width &&
+            pos.y + 16 >= plat.position.y && pos.y + 16 <= plat.position.y + plat.height) {
+            platformY = plat.position.y;
+            return true;
+        }
+    }
+    return false;
+}
+
 void LevelScene::update(float dt, game* gamePtr) {
     // Toggle pause with START
     if (dl::Input::isKeyPressed(dl::Input::START)) {
@@ -253,35 +284,38 @@ void LevelScene::update(float dt, game* gamePtr) {
         _pauseMenuIndex = 0;
     }
 
-    // When paused, handle menu navigation only
-    if (_paused) {
-        if (dl::Input::isKeyPressed(dl::Input::DUP) && _pauseMenuIndex > 0) {
+    // Standard pause mode (no platforms): freeze game, navigate menu
+    if (_paused && _pausePlatforms.empty()) {
+        if (dl::Input::isKeyPressed(dl::Input::DUP) && _pauseMenuIndex > 0)
             _pauseMenuIndex--;
-        }
-        if (dl::Input::isKeyPressed(dl::Input::DDOWN) && _pauseMenuIndex < PAUSE_MENU_COUNT - 1) {
+        if (dl::Input::isKeyPressed(dl::Input::DDOWN) && _pauseMenuIndex < PAUSE_MENU_COUNT - 1)
             _pauseMenuIndex++;
-        }
 
-        // Update menu colors
         _pauseResumeText.setColor(_pauseMenuIndex == 0 ? dl::Color(255, 255, 0) : dl::Color(200, 200, 200));
         _pauseLevelSelectText.setColor(_pauseMenuIndex == 1 ? dl::Color(255, 255, 0) : dl::Color(200, 200, 200));
         _pauseQuitText.setColor(_pauseMenuIndex == 2 ? dl::Color(255, 255, 0) : dl::Color(200, 200, 200));
 
-        // Select option with A
         if (dl::Input::isKeyPressed(dl::Input::A)) {
             if (_pauseMenuIndex == 0) {
-                // Resume
                 _paused = false;
             } else if (_pauseMenuIndex == 1) {
-                // Level Select
                 gamePtr->changeScene(std::make_unique<LevelSelectScene>());
             } else if (_pauseMenuIndex == 2) {
-                // Main Menu
                 gamePtr->changeScene(std::make_unique<MenuScene>());
             }
         }
-        return; // Skip gameplay update when paused
+        return;
     }
+
+    // Platform pause mode: B goes back to level select
+    if (_paused && !_pausePlatforms.empty()) {
+        if (dl::Input::isKeyPressed(dl::Input::B)) {
+            gamePtr->changeScene(std::make_unique<LevelSelectScene>());
+            return;
+        }
+    }
+
+    // --- Physics runs when unpaused OR in platform pause mode ---
 
     // Update level animations
     _levelRenderer.update(dt);
@@ -323,58 +357,47 @@ void LevelScene::update(float dt, game* gamePtr) {
 
     // Check for death from saw collision
     if (checkSawCollision(_playerPos)) {
-        // Add dead body at current position (max 5 bodies)
         addDeadBody(_playerPos);
-        // Respawn at start
         respawnPlayer();
-        return; // Skip rest of update this frame
+        return;
     }
 
     // Check for death (falling off screen)
     if (_playerPos.y >= DEATH_Y) {
-        // Add dead body at death position (clamped to screen, max 5 bodies)
         dl::Vector2f deathPos = _playerPos;
-        deathPos.y = DEATH_Y - 20.0f; // Place body slightly above death line
+        deathPos.y = DEATH_Y - 20.0f;
         if (deathPos.x < 0) deathPos.x = 0;
         if (deathPos.x > 400 - 16) deathPos.x = 400 - 16;
         addDeadBody(deathPos);
-
-        // Respawn at start
         respawnPlayer();
-        return; // Skip rest of update this frame
+        return;
     }
 
     // Ceiling collision - check if jumping into blocks from below
-    if (_playerVelocity.y < 0) {  // Only check when moving upward
+    if (_playerVelocity.y < 0) {
         float blockBottomY = 0;
         if (checkBlockCollisionAbove(_playerPos, blockBottomY)) {
-            // Hit ceiling - set player Y so their top aligns with block bottom
             _playerPos.y = blockBottomY;
-            _playerVelocity.y = 0;  // Stop upward movement, start falling
+            _playerVelocity.y = 0;
         }
     }
 
-    // Ground collision - check blocks, dead bodies
+    // Ground collision - check blocks, dead bodies, and pause platforms
     float blockY = 0;
     float deadBodyY = 0;
+    float pausePlatY = 0;
     bool onBlock = checkBlockCollisionBelow(_playerPos, blockY);
     bool onDeadBody = checkDeadBodyCollision(_playerPos, deadBodyY);
+    bool onPausePlat = _paused ? checkPausePlatformBelow(_playerPos, pausePlatY) : false;
 
-    if (onBlock || onDeadBody) {
-        // When both block and dead body, choose the highest one (smallest Y)
-        if (onBlock && onDeadBody) {
-            if (blockY < deadBodyY) {
-                _playerPos.y = blockY - 16;
-            } else {
-                _playerPos.y = deadBodyY - 16;
-            }
-        } else if (onBlock) {
-            // Set player Y so their bottom edge aligns with block top
-            _playerPos.y = blockY - 16;  // Player sprite is 16 pixels tall
-        } else {
-            // Set player Y so their bottom edge aligns with dead body top
-            _playerPos.y = deadBodyY - 16;  // Player on top of corpse
-        }
+    if (onBlock || onDeadBody || onPausePlat) {
+        // Find highest surface (smallest Y)
+        float highestY = 999999.0f;
+        if (onBlock && blockY < highestY) highestY = blockY;
+        if (onDeadBody && deadBodyY < highestY) highestY = deadBodyY;
+        if (onPausePlat && pausePlatY < highestY) highestY = pausePlatY;
+
+        _playerPos.y = highestY - 16;
         _playerVelocity.y = 0;
         _playerOnGround = true;
     } else {
@@ -391,8 +414,7 @@ void LevelScene::update(float dt, game* gamePtr) {
         constexpr float tileSize = 16.0f;
         float endFlagX = static_cast<float>(objectiveTile->x) * tileSize;
         if (_playerPos.x >= endFlagX - 8 && _playerPos.x <= endFlagX + 8 && _playerOnGround) {
-            // Return to menu scene
-            gamePtr->changeScene(std::make_unique<MenuScene>());
+            gamePtr->changeScene(std::make_unique<LevelSelectScene>());
         }
     }
 }
@@ -410,6 +432,29 @@ void LevelScene::render(dl::RenderWindow& window) {
         window.draw(_deadBodySprites[i]);
     }
 
+    // Draw pause platform text on top screen when paused in platform mode
+    if (_paused && !_pausePlatforms.empty()) {
+        _pauseTitleText.setPosition(dl::Vector2f(170, 5));
+        _pauseTitleText.setScale(dl::Vector2f(0.6f, 0.6f));
+        _pauseTitleText.setColor(dl::Color(255, 255, 255));
+        window.draw(_pauseTitleText);
+
+        _pauseResumeText.setPosition(_pausePlatforms[0].position);
+        _pauseResumeText.setScale(dl::Vector2f(0.5f, 0.5f));
+        _pauseResumeText.setColor(dl::Color(255, 255, 255));
+        window.draw(_pauseResumeText);
+
+        _pauseLevelSelectText.setPosition(_pausePlatforms[1].position);
+        _pauseLevelSelectText.setScale(dl::Vector2f(0.5f, 0.5f));
+        _pauseLevelSelectText.setColor(dl::Color(255, 255, 255));
+        window.draw(_pauseLevelSelectText);
+
+        _pauseQuitText.setPosition(_pausePlatforms[2].position);
+        _pauseQuitText.setScale(dl::Vector2f(0.5f, 0.5f));
+        _pauseQuitText.setColor(dl::Color(255, 255, 255));
+        window.draw(_pauseQuitText);
+    }
+
     // Draw the player with animation
     size_t playerFrame = _playerAnimation.getCurrentFrame();
     _playerSprite.loadFromSpriteSheet(_playerSheet, playerFrame);
@@ -420,12 +465,33 @@ void LevelScene::render(dl::RenderWindow& window) {
 
     // Render bottom screen
     if (_paused) {
-        // Show pause menu on bottom screen
         window.clear(dl::BOTTOM_SCREEN, dl::Color(20, 20, 40));
-        window.draw(_pauseTitleText);
-        window.draw(_pauseResumeText);
-        window.draw(_pauseLevelSelectText);
-        window.draw(_pauseQuitText);
+        if (!_pausePlatforms.empty()) {
+            // Platform mode: show controls
+            _pauseTitleText.setPosition(dl::Vector2f(110, 30));
+            _pauseTitleText.setScale(dl::Vector2f(1.2f, 1.2f));
+            _pauseTitleText.setColor(dl::Color(255, 255, 255));
+            window.draw(_pauseTitleText);
+            window.draw(_pauseInfoText);
+        } else {
+            // Standard mode: navigable menu
+            _pauseTitleText.setPosition(dl::Vector2f(110, 30));
+            _pauseTitleText.setScale(dl::Vector2f(1.2f, 1.2f));
+            _pauseTitleText.setColor(dl::Color(255, 255, 255));
+            window.draw(_pauseTitleText);
+
+            _pauseResumeText.setPosition(dl::Vector2f(100, 80));
+            _pauseResumeText.setScale(dl::Vector2f(0.9f, 0.9f));
+            window.draw(_pauseResumeText);
+
+            _pauseLevelSelectText.setPosition(dl::Vector2f(100, 110));
+            _pauseLevelSelectText.setScale(dl::Vector2f(0.9f, 0.9f));
+            window.draw(_pauseLevelSelectText);
+
+            _pauseQuitText.setPosition(dl::Vector2f(100, 140));
+            _pauseQuitText.setScale(dl::Vector2f(0.9f, 0.9f));
+            window.draw(_pauseQuitText);
+        }
         window.display();
     } else {
         window.clear(dl::BOTTOM_SCREEN, dl::Color(50, 50, 50));

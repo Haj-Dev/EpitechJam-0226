@@ -20,6 +20,7 @@ void LevelSelectScene::onEnter() {
     // Define available levels
     _levels.clear();
     _levels.push_back({"Level 1 - Persistent Death", "romfs:/levelDesign/PersitentDeathLevel.txt"});
+    _levels.push_back({"Level 2 - Pause Platform", "romfs:/levelDesign/PausePlatformLevel.txt"});
 
     _selectedIndex = 0;
 
