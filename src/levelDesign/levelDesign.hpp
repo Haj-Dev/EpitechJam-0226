@@ -16,6 +16,7 @@
 
 class Level {
   public:
+    static constexpr float kTileSize = 16.0f;
     enum class Tile {
         Empty,
         Block,

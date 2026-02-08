@@ -11,6 +11,7 @@
 #include "../Interfaces/AScene.hpp"
 #include "../ui/Button.hpp"
 #include "levelDesign.hpp"
+#include "../Player/Player.hpp"
 
 class game;
 
@@ -31,4 +32,5 @@ class LevelScene : virtual public AScene {
     std::unique_ptr<Button> _menuButton;
     std::unique_ptr<Button> _restartButton;
     dl::Sprite              _background_bottom_sprite;
+    Player                  _player;
 };

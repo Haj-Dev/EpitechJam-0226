@@ -12,6 +12,8 @@
 #include <cstddef>
 #include <memory>
 
+class Level;
+
 class Player {
   public:
     enum class AnimFrame : std::size_t {
@@ -39,13 +41,24 @@ class Player {
     void                setGroundY(float groundY);
     void                handleInput(bool moveLeft, bool moveRight, bool jumpPressed);
 
-    void                update(float dtSeconds);
+    void                update(float dtSeconds, const Level& level);
+
+    dl::FloatRect       getBounds() const;
 
     dl::Sprite*         getSprite();
     const dl::Sprite*   getSprite() const;
 
   protected:
   private:
+    void                        applyInput(float dtSeconds);
+    void                        resolveHorizontal(const Level& level, dl::Vector2f& nextPos, float dtSeconds, float tileSize, float epsilon);
+    void                        resolveVertical(const Level& level, dl::Vector2f& nextPos, float dtSeconds, float tileSize, float epsilon);
+    void                        probeGround(const Level& level, const dl::Vector2f& nextPos, float tileSize, float epsilon);
+    void                        handleHazards(const Level& level, float tileSize, float epsilon);
+    void                        updateAnimation(float dtSeconds);
+    void                        syncSprite();
+    static bool                 isSolidTile(const Level& level, int tileX, int tileY);
+
     std::unique_ptr<dl::Sprite> _sprite;
     dl::SpriteSheet             _spriteSheet;
     dl::Vector2f                _position;
@@ -56,9 +69,12 @@ class Player {
     int                         _moveDir      = 0;
     bool                        _jumpQueued   = false;
     float                       _animTimer    = 0.0f;
+    bool                        _onGround     = false;
 
     static constexpr float      kGravity          = 30.0f;
     static constexpr float      kMoveSpeed        = 30.0f;
     static constexpr float      kJumpSpeed        = 50.0f;
     static constexpr float      kWalkFrameSeconds = 0.25f;
+    static constexpr float      kHitboxWidth      = 16.0f;
+    static constexpr float      kHitboxHeight     = 16.0f;
 };

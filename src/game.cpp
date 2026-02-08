@@ -41,7 +41,7 @@ void game::runGame() {
             _pendingScene = PendingScene::None;
         }
 
-        _scene->update(1 / 60);
+        _scene->update(1.0f / 60.0f);
         _scene->render(_window);
     }
 }
