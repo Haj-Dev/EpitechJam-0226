@@ -5,11 +5,6 @@
 #include <Dualie/System/Input.hpp>
 
 game::game() : _pendingScene(PendingScene::None) {
-    _menuMusic.loadFromFile("romfs:/main-menu.opus");
-    _menuMusic.setLooping(true);
-    _levelMusic.loadFromFile("romfs:/level.opus");
-    _levelMusic.setLooping(true);
-
     _buttonSheet.loadFromFile("romfs:/assets/ui/button.t3x");
     _backgroundBottom.loadFromFile("romfs:/assets/ui/background_lower.t3x");
     _backgroundTop.loadFromFile("romfs:/assets/ui/background_upper.t3x");
@@ -21,7 +16,6 @@ game::game() : _pendingScene(PendingScene::None) {
 game::~game() {}
 
 void game::runGame() {
-    _menuMusic.play();
     while (isWindowOpen()) {
         dl::Input::updateInput();
 

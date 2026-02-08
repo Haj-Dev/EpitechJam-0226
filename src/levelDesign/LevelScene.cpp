@@ -15,7 +15,6 @@
 LevelScene::LevelScene(game* gameInstance, const std::string& levelPath) : _game(gameInstance), _levelPath(levelPath) {}
 
 void LevelScene::onEnter() {
-    _game->getLevelMusic().play();
 
     _level                        = std::make_unique<Level>(_levelPath);
     const auto         spawnPoint = _level->getSpawnPoint();
@@ -61,11 +60,9 @@ void LevelScene::onEnter() {
 }
 
 void LevelScene::onExit() {
-    _game->getLevelMusic().stop();
     _menuButton.reset();
     _restartButton.reset();
     _level.reset();
-    _game->getMenuMusic().play();
 }
 
 void LevelScene::update(float dt) {
