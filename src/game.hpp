@@ -2,7 +2,6 @@
 
 #include <Dualie/Dualie.hpp>
 #include "Interfaces/IScene.hpp"
-#include "Player/Player.hpp"
 
 class game {
   public:
@@ -16,5 +15,4 @@ class game {
     dl::Clock               _clock;
     dl::Music               _music;
     std::unique_ptr<IScene> _scene;
-    Player                  _player;
 };
