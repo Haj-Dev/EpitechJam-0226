@@ -9,10 +9,17 @@
 #include "../game.hpp"
 #include "../System.hpp"
 
+#include <Dualie/Dualie.hpp>
+
 LevelScene::LevelScene(game* gameInstance, const std::string& levelPath) : _game(gameInstance), _levelPath(levelPath) {}
 
 void LevelScene::onEnter() {
-    _level = std::make_unique<Level>(_levelPath);
+    _level                        = std::make_unique<Level>(_levelPath);
+    const auto         spawnPoint = _level->getSpawnPoint();
+    const dl::Vector2f spawnPos =
+        spawnPoint.has_value() ? dl::Vector2f(spawnPoint->x * Level::kTileSize, spawnPoint->y * Level::kTileSize) : dl::Vector2f(Level::kTileSize, Level::kTileSize);
+    _player.setPosition(spawnPos);
+    _player.setVelocity(dl::Vector2f(0.0f, 0.0f));
 
     _buttonSheet.loadFromFile("romfs:/assets/ui/button.t3x");
 
@@ -38,9 +45,17 @@ void LevelScene::onExit() {
 }
 
 void LevelScene::update(float dt) {
-    (void)dt;
     _menuButton->update();
     _restartButton->update();
+
+    const bool moveLeft  = dl::Input::isKeyHeld(dl::Input::LEFT);
+    const bool moveRight = dl::Input::isKeyHeld(dl::Input::RIGHT);
+    const bool jump      = dl::Input::isKeyPressed(dl::Input::A);
+    _player.handleInput(moveLeft, moveRight, jump);
+
+    if (_level) {
+        _player.update(dt, *_level);
+    }
 }
 
 void LevelScene::render(dl::RenderWindow& window) {
@@ -48,8 +63,5 @@ void LevelScene::render(dl::RenderWindow& window) {
     window.display();
 
     window.clear(dl::BOTTOM_SCREEN, dl::Color(100, 100, 100));
-    window.draw(_background_bottom_sprite);
-    window.draw(*_menuButton);
-    window.draw(*_restartButton);
     window.display();
 }
