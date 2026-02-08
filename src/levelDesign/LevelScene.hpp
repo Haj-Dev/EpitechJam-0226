@@ -28,10 +28,7 @@ class LevelScene : virtual public AScene {
     game*                   _game;
     std::unique_ptr<Level>  _level;
     std::string             _levelPath;
-    dl::SpriteSheet         _buttonSheet;
-    dl::TextBuffer          _textBuffer{4096};
     std::unique_ptr<Button> _menuButton;
     std::unique_ptr<Button> _restartButton;
-    dl::SpriteSheet         _background_bottom;
     dl::Sprite              _background_bottom_sprite;
 };

@@ -14,11 +14,9 @@ LevelScene::LevelScene(game* gameInstance, const std::string& levelPath) : _game
 void LevelScene::onEnter() {
     _level = std::make_unique<Level>(_levelPath);
 
-    _buttonSheet.loadFromFile("romfs:/assets/ui/button.t3x");
-
     const dl::Vector2f buttonSize(System::BUTTON_WIDTH, System::BUTTON_HEIGHT);
-    _menuButton    = std::make_unique<Button>(_buttonSheet, 0, buttonSize, _textBuffer, "Menu");
-    _restartButton = std::make_unique<Button>(_buttonSheet, 0, buttonSize, _textBuffer, "Restart");
+    _menuButton    = std::make_unique<Button>(_game->getButtonSheet(), 0, buttonSize, _game->getTextBuffer(), "Menu");
+    _restartButton = std::make_unique<Button>(_game->getButtonSheet(), 0, buttonSize, _game->getTextBuffer(), "Restart");
 
     _menuButton->setPosition(dl::Vector2f(20.0f, 75.0f));
     _restartButton->setPosition(dl::Vector2f(180.0f, 75.0f));
@@ -26,8 +24,7 @@ void LevelScene::onEnter() {
     _menuButton->onClick    = [this]() { _game->loadMenu(); };
     _restartButton->onClick = [this]() { _game->loadLevel(_levelPath); };
 
-    _background_bottom.loadFromFile("romfs:/assets/ui/background_lower.t3x");
-    _background_bottom_sprite.loadFromSpriteSheet(_background_bottom, 0);
+    _background_bottom_sprite.loadFromSpriteSheet(_game->getBackgroundBottom(), 0);
     _background_bottom_sprite.setPosition(dl::Vector2f(0, 0));
 }
 

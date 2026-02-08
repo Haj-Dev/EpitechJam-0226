@@ -7,14 +7,11 @@
 MenuScene::MenuScene(game* gameInstance) : _game(gameInstance) {}
 
 void MenuScene::onEnter() {
-    _background_bottom.loadFromFile("romfs:/assets/ui/background_lower.t3x");
-    _background_bottom_sprite.loadFromSpriteSheet(_background_bottom, 0);
+    _background_bottom_sprite.loadFromSpriteSheet(_game->getBackgroundBottom(), 0);
     _background_bottom_sprite.setPosition(dl::Vector2f(0, 0));
-    _background_top.loadFromFile("romfs:/assets/ui/background_upper.t3x");
-    _background_top_sprite.loadFromSpriteSheet(_background_top, 0);
+    _background_top_sprite.loadFromSpriteSheet(_game->getBackgroundTop(), 0);
     _background_top_sprite.setPosition(dl::Vector2f(0, 0));
 
-    _button_sheet.loadFromFile("romfs:/assets/ui/button.t3x");
     _levelButtons.clear();
 
     const dl::Vector2f               buttonSize(System::BUTTON_WIDTH, System::BUTTON_HEIGHT);
@@ -28,7 +25,7 @@ void MenuScene::onEnter() {
     const std::array<std::string, 4> paths = {"romfs:/levels/level1.txt", "romfs:/levels/level2.txt", "romfs:/levels/level3.txt", "romfs:/levels/level4.txt"};
 
     for (std::size_t i = 0; i < labels.size(); ++i) {
-        Button      button(_button_sheet, 0, buttonSize, _textBuffer, labels[i]);
+        Button      button(_game->getButtonSheet(), 0, buttonSize, _game->getTextBuffer(), labels[i]);
         const int   column = static_cast<int>(i % 2);
         const int   row    = static_cast<int>(i / 2);
         const float x      = startX + column * (buttonSize.x + columnSpacing);

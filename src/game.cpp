@@ -8,6 +8,11 @@ game::game() : _pendingScene(PendingScene::None) {
     _music.loadFromFile("romfs:/SuperJamGirl.opus");
     _music.setLooping(true);
     _music.play();
+
+    _buttonSheet.loadFromFile("romfs:/assets/ui/button.t3x");
+    _backgroundBottom.loadFromFile("romfs:/assets/ui/background_lower.t3x");
+    _backgroundTop.loadFromFile("romfs:/assets/ui/background_upper.t3x");
+
     _scene = std::make_unique<MenuScene>(this);
     _scene->onEnter();
 }
@@ -26,6 +31,7 @@ void game::runGame() {
 
         if (_pendingScene != PendingScene::None) {
             _scene->onExit();
+            _scene.reset();
             if (_pendingScene == PendingScene::Menu) {
                 _scene = std::make_unique<MenuScene>(this);
             } else {

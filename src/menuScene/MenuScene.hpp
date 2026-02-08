@@ -29,11 +29,7 @@ class MenuScene : virtual public AScene {
 
   private:
     game*               _game;
-    dl::SpriteSheet     _background_bottom;
     dl::Sprite          _background_bottom_sprite;
-    dl::SpriteSheet     _background_top;
     dl::Sprite          _background_top_sprite;
-    dl::SpriteSheet     _button_sheet;
-    dl::TextBuffer      _textBuffer{4096};
     std::vector<Button> _levelButtons;
 };
