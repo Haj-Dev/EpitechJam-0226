@@ -25,6 +25,12 @@ class game {
     dl::SpriteSheet& getBackgroundTop() {
         return _backgroundTop;
     }
+    dl::Music& getLevelMusic() {
+        return _levelMusic;
+    }
+    dl::Music& getMenuMusic() {
+        return _menuMusic;
+    }
 
   private:
     enum class PendingScene {
@@ -35,7 +41,8 @@ class game {
 
     dl::RenderWindow        _window;
     dl::Clock               _clock;
-    dl::Music               _music;
+    dl::Music               _levelMusic;
+    dl::Music               _menuMusic;
     std::unique_ptr<IScene> _scene;
     PendingScene            _pendingScene;
     std::string             _pendingLevelPath;

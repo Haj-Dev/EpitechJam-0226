@@ -5,9 +5,10 @@
 #include <Dualie/System/Input.hpp>
 
 game::game() : _pendingScene(PendingScene::None) {
-    _music.loadFromFile("romfs:/SuperJamGirl.opus");
-    _music.setLooping(true);
-    _music.play();
+    _menuMusic.loadFromFile("romfs:/main-menu.opus");
+    _menuMusic.setLooping(true);
+    _levelMusic.loadFromFile("romfs:/level.opus");
+    _levelMusic.setLooping(true);
 
     _buttonSheet.loadFromFile("romfs:/assets/ui/button.t3x");
     _backgroundBottom.loadFromFile("romfs:/assets/ui/background_lower.t3x");
@@ -20,6 +21,7 @@ game::game() : _pendingScene(PendingScene::None) {
 game::~game() {}
 
 void game::runGame() {
+    _menuMusic.play();
     constexpr float kDeltaSeconds = 1.0f / 60.0f;
     _clock.restart();
     while (isWindowOpen()) {
