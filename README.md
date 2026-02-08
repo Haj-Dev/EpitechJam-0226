@@ -9,3 +9,5 @@ Then:
 - `cd` into `build`
 - Run `cmake .. -DCMAKE_TOOLCHAIN_FILE='/opt/devkitpro/cmake/3DS.cmake' -DDualie_DIR=/opt/devkitpro/cmake/` (arguments may differ depending on your installation)
 - Run `make`. A `.3dsx` file will be generated.
+
+_btw inkurey broke too many things with his PRs_
