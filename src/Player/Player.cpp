@@ -96,7 +96,7 @@ void Player::update(float dtSeconds, const Level& level) {
     probeGround(level, nextPos, tileSize, epsilon);
 
     _position = nextPos;
-    handleHazards(level, tileSize, epsilon);
+    handleHazards(level, tileSize);
     updateAnimation(dtSeconds);
     syncSprite();
 }
@@ -214,7 +214,7 @@ void Player::probeGround(const Level& level, const dl::Vector2f& nextPos, float 
     }
 }
 
-void Player::handleHazards(const Level& level, float tileSize, float epsilon) {
+void Player::handleHazards(const Level& level, float tileSize) {
     const float inset  = 2.0f;
     const float left   = _position.x + inset;
     const float right  = _position.x + kHitboxWidth - inset;

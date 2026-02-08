@@ -42,6 +42,11 @@ void LevelScene::onEnter() {
     _endFlagSpriteSheet.loadFromFile("romfs:/assets/level/end_flag.t3x");
     _sawBaldeSpriteSheet.loadFromFile("romfs:/assets/level/sawblade.t3x");
 
+    _sawAnimClock  = 0.0f;
+    _flagAnimClock = 0.0f;
+    _sawFrame      = 0;
+    _flagFrame     = 0;
+
     for (size_t w = 0; w < _level->getWidth(); w++) {
         for (size_t h = 0; h < _level->getHeight(); h++) {
             switch (_level->getTile(w, h)) {
@@ -53,9 +58,6 @@ void LevelScene::onEnter() {
             }
         }
     }
-
-    _playerspriteSheet.loadFromFile("romfs:/assets/jam_girl/jam_girl.t3x");
-    _playersprite.loadFromSpriteSheet(_playerspriteSheet, 0);
 }
 
 void LevelScene::onExit() {
@@ -77,6 +79,53 @@ void LevelScene::update(float dt) {
 
     if (_level) {
         _player.update(dt, *_level);
+        updateTileAnimations(dt);
+    }
+}
+
+void LevelScene::updateTileAnimations(float dt) {
+    bool sawChanged  = false;
+    bool flagChanged = false;
+
+    _sawAnimClock += dt;
+    while (_sawAnimClock >= kSawSecondsPerFrame) {
+        _sawAnimClock -= kSawSecondsPerFrame;
+        _sawFrame  = (_sawFrame + 1) % kSawFrameCount;
+        sawChanged = true;
+    }
+
+    _flagAnimClock += dt;
+    while (_flagAnimClock >= kFlagSecondsPerFrame) {
+        _flagAnimClock -= kFlagSecondsPerFrame;
+        _flagFrame  = (_flagFrame + 1) % kFlagFrameCount;
+        flagChanged = true;
+    }
+
+    if (!sawChanged && !flagChanged) {
+        return;
+    }
+
+    for (std::size_t w = 0; w < _level->getWidth(); ++w) {
+        for (std::size_t h = 0; h < _level->getHeight(); ++h) {
+            switch (_level->getTile(w, h)) {
+                case Level::Tile::Spawn:
+                    if (flagChanged) {
+                        _spriteMap[w][h].loadFromSpriteSheet(_startFlagSpriteSheet, _flagFrame);
+                    }
+                    break;
+                case Level::Tile::Objective:
+                    if (flagChanged) {
+                        _spriteMap[w][h].loadFromSpriteSheet(_endFlagSpriteSheet, _flagFrame);
+                    }
+                    break;
+                case Level::Tile::Saw:
+                    if (sawChanged) {
+                        _spriteMap[w][h].loadFromSpriteSheet(_sawBaldeSpriteSheet, _sawFrame);
+                    }
+                    break;
+                default: break;
+            }
+        }
     }
 
     if (isPlayerOnObjective()) {
@@ -142,8 +191,10 @@ void LevelScene::render(dl::RenderWindow& window) {
     if (_player.getPosition().x > _level->getWidth() * 16 - System::TOP_WIDTH / 2) {
         screenPlayerX = _player.getPosition().x - (_level->getWidth() * 16 - System::TOP_WIDTH);
     }
-    _playersprite.setPosition(dl::Vector2f(screenPlayerX, screenPlayerY));
-    window.draw(_playersprite);
+    if (dl::Sprite* playerSprite = _player.getSprite()) {
+        playerSprite->setPosition(dl::Vector2f(screenPlayerX, screenPlayerY));
+        window.draw(*playerSprite);
+    }
     window.display();
 
     window.clear(dl::BOTTOM_SCREEN, dl::Color(100, 100, 100));

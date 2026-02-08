@@ -22,10 +22,7 @@ game::~game() {}
 
 void game::runGame() {
     _menuMusic.play();
-    constexpr float kDeltaSeconds = 1.0f / 60.0f;
-    _clock.restart();
     while (isWindowOpen()) {
-        _clock.restart();
         dl::Input::updateInput();
 
         if (_pendingScene != PendingScene::None) {

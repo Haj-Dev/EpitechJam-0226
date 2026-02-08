@@ -40,7 +40,6 @@ class game {
     };
 
     dl::RenderWindow        _window;
-    dl::Clock               _clock;
     dl::Music               _levelMusic;
     dl::Music               _menuMusic;
     std::unique_ptr<IScene> _scene;

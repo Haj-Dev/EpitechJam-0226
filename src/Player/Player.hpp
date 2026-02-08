@@ -54,7 +54,7 @@ class Player {
     void                        resolveHorizontal(const Level& level, dl::Vector2f& nextPos, float dtSeconds, float tileSize, float epsilon);
     void                        resolveVertical(const Level& level, dl::Vector2f& nextPos, float dtSeconds, float tileSize, float epsilon);
     void                        probeGround(const Level& level, const dl::Vector2f& nextPos, float tileSize, float epsilon);
-    void                        handleHazards(const Level& level, float tileSize, float epsilon);
+    void                        handleHazards(const Level& level, float tileSize);
     void                        updateAnimation(float dtSeconds);
     void                        syncSprite();
     static bool                 isSolidTile(const Level& level, int tileX, int tileY);
