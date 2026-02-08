@@ -33,4 +33,11 @@ class LevelScene : virtual public AScene {
     std::unique_ptr<Button> _restartButton;
     dl::Sprite              _background_bottom_sprite;
     Player                  _player;
+    dl::SpriteSheet         _stoneTileSpriteSheet;
+    dl::SpriteSheet         _startFlagSpriteSheet;
+    dl::SpriteSheet         _endFlagSpriteSheet;
+    dl::SpriteSheet         _sawBaldeSpriteSheet;
+    dl::Sprite              _spriteMap[100][100]; //TEMP
+    dl::SpriteSheet         _playerspriteSheet;
+    dl::Sprite              _playersprite;
 };

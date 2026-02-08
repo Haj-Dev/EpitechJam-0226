@@ -35,6 +35,26 @@ void LevelScene::onEnter() {
 
     _background_bottom_sprite.loadFromSpriteSheet(_game->getBackgroundBottom(), 0);
     _background_bottom_sprite.setPosition(dl::Vector2f(0, 0));
+
+    _stoneTileSpriteSheet.loadFromFile("romfs:/assets/level/stone_tile.t3x");
+    _startFlagSpriteSheet.loadFromFile("romfs:/assets/level/start_flag.t3x");
+    _endFlagSpriteSheet.loadFromFile("romfs:/assets/level/end_flag.t3x");
+    _sawBaldeSpriteSheet.loadFromFile("romfs:/assets/level/sawblade.t3x");
+
+    for (size_t w = 0; w < _level->getWidth(); w++) {
+        for (size_t h = 0; h < _level->getHeight(); h++) {
+            switch (_level->getTile(w, h)) {
+                case Level::Tile::Block: _spriteMap[w][h].loadFromSpriteSheet(_stoneTileSpriteSheet, 0); break;
+                case Level::Tile::Spawn: _spriteMap[w][h].loadFromSpriteSheet(_startFlagSpriteSheet, 0); break;
+                case Level::Tile::Objective: _spriteMap[w][h].loadFromSpriteSheet(_endFlagSpriteSheet, 0); break;
+                case Level::Tile::Saw: _spriteMap[w][h].loadFromSpriteSheet(_sawBaldeSpriteSheet, 0); break;
+                case Level::Tile::Empty: break;
+            }
+        }
+    }
+
+    _playerspriteSheet.loadFromFile("romfs:/assets/jam_girl/jam_girl.t3x");
+    _playersprite.loadFromSpriteSheet(_playerspriteSheet, 0);
 }
 
 void LevelScene::onExit() {
@@ -60,7 +80,33 @@ void LevelScene::update(float dt) {
 }
 
 void LevelScene::render(dl::RenderWindow& window) {
-    window.clear(dl::TOP_SCREEN, dl::Color(100, 100, 100));
+    window.clear(dl::TOP_SCREEN, dl::Color(100, 100, 200));
+    float x = std::clamp(_player.getPosition().x, (float)System::TOP_WIDTH / 2, (float)_level->getWidth() * 16 - System::TOP_WIDTH / 2);
+    float y = std::clamp(_player.getPosition().y, (float)System::TOP_HEIGHT / 2, (float)_level->getHeight() * 16 - System::TOP_HEIGHT / 2);
+    for (size_t w = (size_t)std::max((int)x / 16 - System::TOP_WIDTH / 16 / 2 - 1, 0); w < (size_t)x / 16 + System::TOP_WIDTH / 16 / 2 + 1; w++) {
+        for (size_t h = (size_t)std::max((int)y / 16 - System::TOP_HEIGHT / 16 / 2 - 1, 0); h < (size_t)y / 16 + System::TOP_HEIGHT / 16 / 2 + 1; h++) {
+            if (_level->getTile(w, h) != Level::Tile::Empty) {
+                _spriteMap[w][h].setPosition(dl::Vector2f(w * 16 - x + System::TOP_WIDTH / 2, h * 16 - y + System::TOP_HEIGHT / 2));
+                window.draw(_spriteMap[w][h]);
+            }
+        }
+    }
+    int screenPlayerY = System::TOP_HEIGHT / 2;
+    if (_player.getPosition().y < System::TOP_HEIGHT / 2) {
+        screenPlayerY = _player.getPosition().y;
+    }
+    if (_player.getPosition().y > _level->getHeight() * 16 - System::TOP_HEIGHT / 2) {
+        screenPlayerY = _player.getPosition().y - (_level->getHeight() * 16 - System::TOP_HEIGHT);
+    }
+    int screenPlayerX = System::TOP_WIDTH / 2;
+    if (_player.getPosition().x < System::TOP_WIDTH / 2) {
+        screenPlayerX = _player.getPosition().x;
+    }
+    if (_player.getPosition().x > _level->getWidth() * 16 - System::TOP_WIDTH / 2) {
+        screenPlayerX = _player.getPosition().x - (_level->getWidth() * 16 - System::TOP_WIDTH);
+    }
+    _playersprite.setPosition(dl::Vector2f(screenPlayerX, screenPlayerY));
+    window.draw(_playersprite);
     window.display();
 
     window.clear(dl::BOTTOM_SCREEN, dl::Color(100, 100, 100));
