@@ -10,13 +10,15 @@
 #include <Dualie/Dualie.hpp>
 #include "../Interfaces/AScene.hpp"
 
+class game;
+
 class MenuScene : virtual public AScene {
   public:
     virtual ~MenuScene() = default;
 
     void onEnter() override;
     void onExit() override;
-    void update(float dt) override;
+    void update(float dt, game* gamePtr) override;
     void render(dl::RenderWindow& window) override;
 
   private:

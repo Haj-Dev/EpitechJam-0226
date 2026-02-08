@@ -10,6 +10,7 @@ class game {
     ~game();
     void runGame();
     bool isWindowOpen();
+    void changeScene(std::unique_ptr<IScene> newScene);
 
   private:
     dl::RenderWindow        _window;

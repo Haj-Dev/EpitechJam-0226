@@ -15,12 +15,12 @@ void game::runGame() {
 
     _clock.restart();
     while (isWindowOpen()) {
-        while (_clock.getElapsedTime().asSeconds() < 1 / 60) {
+        while (_clock.getElapsedTime().asSeconds() < 1.0f / 60.0f) {
             //wait
         }
         _clock.restart();
 
-        _scene->update(1 / 60);
+        _scene->update(1.0f / 60.0f, this);
 
         _scene->render(_window);
     }
@@ -28,4 +28,14 @@ void game::runGame() {
 
 bool game::isWindowOpen() {
     return (_window.isOpen());
+}
+
+void game::changeScene(std::unique_ptr<IScene> newScene) {
+    if (_scene) {
+        _scene->onExit();
+    }
+    _scene = std::move(newScene);
+    if (_scene) {
+        _scene->onEnter();
+    }
 }

@@ -15,6 +15,6 @@ class AScene : public IScene {
 
     void onEnter() override                        = 0;
     void onExit() override                         = 0;
-    void update(float dt) override                 = 0;
+    void update(float dt, game* gamePtr) override  = 0;
     void render(dl::RenderWindow& window) override = 0;
 };

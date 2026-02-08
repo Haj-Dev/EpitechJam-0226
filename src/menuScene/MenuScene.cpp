@@ -1,4 +1,6 @@
 #include "MenuScene.hpp"
+#include "../game.hpp"
+#include "../levelDesign/LevelScene.hpp"
 
 void MenuScene::onEnter() {
     _background_bottom.loadFromFile("romfs:/assets/ui/background_lower.t3x");
@@ -11,7 +13,13 @@ void MenuScene::onEnter() {
 
 void MenuScene::onExit() {}
 
-void MenuScene::update(float dt) {}
+void MenuScene::update(float dt, game* gamePtr) {
+    // Check if START button is pressed
+    if (dl::Input::isKeyPressed(dl::Input::START)) {
+        // Transition to Level 1 - Death Platform Level
+        gamePtr->changeScene(std::make_unique<LevelScene>("romfs:/levelDesign/PersitentDeathLevel.txt"));
+    }
+}
 
 void MenuScene::render(dl::RenderWindow& window) {
     window.clear(dl::TOP_SCREEN, dl::Color(0, 100, 0));
