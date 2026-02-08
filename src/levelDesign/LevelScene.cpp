@@ -10,6 +10,7 @@
 #include "../System.hpp"
 
 #include <Dualie/Dualie.hpp>
+#include <cmath>
 
 LevelScene::LevelScene(game* gameInstance, const std::string& levelPath) : _game(gameInstance), _levelPath(levelPath) {}
 
@@ -77,6 +78,42 @@ void LevelScene::update(float dt) {
     if (_level) {
         _player.update(dt, *_level);
     }
+
+    if (isPlayerOnObjective()) {
+        _game->loadMenu();
+        return;
+    }
+}
+
+bool LevelScene::isPlayerOnObjective() const {
+    if (!_level) {
+        return false;
+    }
+
+    const dl::FloatRect bounds  = _player.getBounds();
+    const float         epsilon = 0.001f;
+    const float         left    = bounds.left;
+    const float         right   = bounds.left + bounds.width - epsilon;
+    const float         top     = bounds.top;
+    const float         bottom  = bounds.top + bounds.height - epsilon;
+
+    const int           leftTile   = static_cast<int>(std::floor(left / Level::kTileSize));
+    const int           rightTile  = static_cast<int>(std::floor(right / Level::kTileSize));
+    const int           topTile    = static_cast<int>(std::floor(top / Level::kTileSize));
+    const int           bottomTile = static_cast<int>(std::floor(bottom / Level::kTileSize));
+
+    for (int tileY = topTile; tileY <= bottomTile; ++tileY) {
+        for (int tileX = leftTile; tileX <= rightTile; ++tileX) {
+            if (tileX < 0 || tileY < 0) {
+                continue;
+            }
+            if (_level->getTile(static_cast<std::size_t>(tileX), static_cast<std::size_t>(tileY)) == Level::Tile::Objective) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 void LevelScene::render(dl::RenderWindow& window) {

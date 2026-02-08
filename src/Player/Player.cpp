@@ -215,10 +215,11 @@ void Player::probeGround(const Level& level, const dl::Vector2f& nextPos, float 
 }
 
 void Player::handleHazards(const Level& level, float tileSize, float epsilon) {
-    const float left   = _position.x;
-    const float right  = _position.x + kHitboxWidth - epsilon;
+    const float inset  = 2.0f;
+    const float left   = _position.x + inset;
+    const float right  = _position.x + kHitboxWidth - inset;
     const float top    = _position.y;
-    const float bottom = _position.y + kHitboxHeight - epsilon;
+    const float bottom = _position.y + kHitboxHeight - inset;
 
     const int   leftTile   = static_cast<int>(std::floor(left / tileSize));
     const int   rightTile  = static_cast<int>(std::floor(right / tileSize));

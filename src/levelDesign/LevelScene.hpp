@@ -26,6 +26,7 @@ class LevelScene : virtual public AScene {
     void render(dl::RenderWindow& window) override;
 
   private:
+    bool                    isPlayerOnObjective() const;
     game*                   _game;
     std::unique_ptr<Level>  _level;
     std::string             _levelPath;

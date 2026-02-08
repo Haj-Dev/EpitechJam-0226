@@ -25,9 +25,6 @@ void game::runGame() {
     constexpr float kDeltaSeconds = 1.0f / 60.0f;
     _clock.restart();
     while (isWindowOpen()) {
-        while (_clock.getElapsedTime().asSeconds() < kDeltaSeconds) {
-            //wait
-        }
         _clock.restart();
         dl::Input::updateInput();
 
