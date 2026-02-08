@@ -71,7 +71,7 @@ void Player::setGroundY(float groundY) {
     _groundY = groundY;
 }
 
-void Player::handleInput(bool moveLeft, bool moveRight, bool jumpPressed) {
+void Player::handleInput(bool moveLeft, bool moveRight, bool jumpPressed, bool jumpHeld) {
     _moveDir = 0;
     if (moveLeft) {
         _moveDir -= 1;
@@ -82,6 +82,7 @@ void Player::handleInput(bool moveLeft, bool moveRight, bool jumpPressed) {
     if (jumpPressed) {
         _jumpQueued = true;
     }
+    _jumpHeld = jumpHeld;
 }
 
 void Player::update(float dtSeconds, const Level& level) {
@@ -109,7 +110,9 @@ void Player::applyInput(float dtSeconds) {
     _jumpQueued = false;
 
     _velocity.x += _acceleration.x * dtSeconds;
-    _velocity.y += (kGravity + _acceleration.y) * dtSeconds;
+
+    float currentGravity = _jumpHeld ? kGravityLowJump : kGravity;
+    _velocity.y += (currentGravity + _acceleration.y) * dtSeconds;
 }
 
 bool Player::isSolidTile(const Level& level, int tileX, int tileY) {

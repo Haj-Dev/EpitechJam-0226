@@ -72,7 +72,8 @@ void LevelScene::update(float dt) {
     const bool moveLeft  = dl::Input::isKeyHeld(dl::Input::LEFT);
     const bool moveRight = dl::Input::isKeyHeld(dl::Input::RIGHT);
     const bool jump      = dl::Input::isKeyPressed(dl::Input::A);
-    _player.handleInput(moveLeft, moveRight, jump);
+    const bool jumpHeld  = dl::Input::isKeyHeld(dl::Input::A);
+    _player.handleInput(moveLeft, moveRight, jump, jumpHeld);
 
     if (_level) {
         _player.update(dt, *_level);

@@ -39,7 +39,7 @@ class Player {
     void                setAcceleration(const dl::Vector2f& acceleration);
 
     void                setGroundY(float groundY);
-    void                handleInput(bool moveLeft, bool moveRight, bool jumpPressed);
+    void                handleInput(bool moveLeft, bool moveRight, bool jumpPressed, bool jumpHeld);
 
     void                update(float dtSeconds, const Level& level);
 
@@ -68,10 +68,12 @@ class Player {
     float                       _groundY      = 200.0f;
     int                         _moveDir      = 0;
     bool                        _jumpQueued   = false;
+    bool                        _jumpHeld     = false;
     float                       _animTimer    = 0.0f;
     bool                        _onGround     = false;
 
-    static constexpr float      kGravity          = 30.0f;
+    static constexpr float      kGravity          = 16.0f;
+    static constexpr float      kGravityLowJump   = 32.0f;
     static constexpr float      kMoveSpeed        = 30.0f;
     static constexpr float      kJumpSpeed        = 50.0f;
     static constexpr float      kWalkFrameSeconds = 0.25f;
