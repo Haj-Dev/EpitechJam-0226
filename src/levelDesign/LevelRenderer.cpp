@@ -9,8 +9,8 @@
 
 LevelRenderer::LevelRenderer(const Level& level)
     : _level(level),
-      _startFlagAnimation(2, .5f),    // start flag: 2 frames, 1s per frame
-      _endFlagAnimation(2, .5f) {     // end flag: 2 frames, 1s per frame
+      _startFlagAnimation(2, .5f),    // start flag: 2 frames, 0.5s per frame
+      _endFlagAnimation(2, .5f) {     // end flag: 2 frames, 0.5s per frame
 }
 
 void LevelRenderer::initialize() {

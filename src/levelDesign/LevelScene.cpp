@@ -1,6 +1,7 @@
 #include "LevelScene.hpp"
 #include "../game.hpp"
 #include "../menuScene/MenuScene.hpp"
+#include "../levelSelectScene/LevelSelectScene.hpp"
 #include <vector>
 
 LevelScene::LevelScene(const std::string& levelPath)
@@ -9,7 +10,14 @@ LevelScene::LevelScene(const std::string& levelPath)
       _playerAnimation(4, 0.8f),  // 4 frames, 0.8s per frame
       _playerPos(0, 0),
       _playerVelocity(0, 0),
-      _playerOnGround(false) {
+      _playerOnGround(false),
+      _paused(false),
+      _pauseMenuIndex(0),
+      _pauseTextBuffer(256),
+      _pauseTitleText(_pauseTextBuffer),
+      _pauseResumeText(_pauseTextBuffer),
+      _pauseLevelSelectText(_pauseTextBuffer),
+      _pauseQuitText(_pauseTextBuffer) {
 }
 
 void LevelScene::onEnter() {
@@ -39,6 +47,27 @@ void LevelScene::onEnter() {
     // Clear dead bodies from previous runs
     _deadBodies.clear();
     _deadBodySprites.clear();
+
+    // Setup pause menu
+    _paused = false;
+    _pauseMenuIndex = 0;
+
+    _pauseTitleText.setString("PAUSED");
+    _pauseTitleText.setPosition(dl::Vector2f(110, 30));
+    _pauseTitleText.setScale(dl::Vector2f(1.2f, 1.2f));
+    _pauseTitleText.setColor(dl::Color(255, 255, 255));
+
+    _pauseResumeText.setString("Resume");
+    _pauseResumeText.setPosition(dl::Vector2f(100, 80));
+    _pauseResumeText.setScale(dl::Vector2f(0.9f, 0.9f));
+
+    _pauseLevelSelectText.setString("Level Select");
+    _pauseLevelSelectText.setPosition(dl::Vector2f(100, 110));
+    _pauseLevelSelectText.setScale(dl::Vector2f(0.9f, 0.9f));
+
+    _pauseQuitText.setString("Main Menu");
+    _pauseQuitText.setPosition(dl::Vector2f(100, 140));
+    _pauseQuitText.setScale(dl::Vector2f(0.9f, 0.9f));
 }
 
 void LevelScene::onExit() {
@@ -218,6 +247,42 @@ void LevelScene::addDeadBody(const dl::Vector2f& pos) {
 }
 
 void LevelScene::update(float dt, game* gamePtr) {
+    // Toggle pause with START
+    if (dl::Input::isKeyPressed(dl::Input::START)) {
+        _paused = !_paused;
+        _pauseMenuIndex = 0;
+    }
+
+    // When paused, handle menu navigation only
+    if (_paused) {
+        if (dl::Input::isKeyPressed(dl::Input::DUP) && _pauseMenuIndex > 0) {
+            _pauseMenuIndex--;
+        }
+        if (dl::Input::isKeyPressed(dl::Input::DDOWN) && _pauseMenuIndex < PAUSE_MENU_COUNT - 1) {
+            _pauseMenuIndex++;
+        }
+
+        // Update menu colors
+        _pauseResumeText.setColor(_pauseMenuIndex == 0 ? dl::Color(255, 255, 0) : dl::Color(200, 200, 200));
+        _pauseLevelSelectText.setColor(_pauseMenuIndex == 1 ? dl::Color(255, 255, 0) : dl::Color(200, 200, 200));
+        _pauseQuitText.setColor(_pauseMenuIndex == 2 ? dl::Color(255, 255, 0) : dl::Color(200, 200, 200));
+
+        // Select option with A
+        if (dl::Input::isKeyPressed(dl::Input::A)) {
+            if (_pauseMenuIndex == 0) {
+                // Resume
+                _paused = false;
+            } else if (_pauseMenuIndex == 1) {
+                // Level Select
+                gamePtr->changeScene(std::make_unique<LevelSelectScene>());
+            } else if (_pauseMenuIndex == 2) {
+                // Main Menu
+                gamePtr->changeScene(std::make_unique<MenuScene>());
+            }
+        }
+        return; // Skip gameplay update when paused
+    }
+
     // Update level animations
     _levelRenderer.update(dt);
 
@@ -353,7 +418,17 @@ void LevelScene::render(dl::RenderWindow& window) {
 
     window.display();
 
-    // Render UI on bottom screen
-    window.clear(dl::BOTTOM_SCREEN, dl::Color(50, 50, 50));
-    window.display();
+    // Render bottom screen
+    if (_paused) {
+        // Show pause menu on bottom screen
+        window.clear(dl::BOTTOM_SCREEN, dl::Color(20, 20, 40));
+        window.draw(_pauseTitleText);
+        window.draw(_pauseResumeText);
+        window.draw(_pauseLevelSelectText);
+        window.draw(_pauseQuitText);
+        window.display();
+    } else {
+        window.clear(dl::BOTTOM_SCREEN, dl::Color(50, 50, 50));
+        window.display();
+    }
 }

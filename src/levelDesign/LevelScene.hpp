@@ -45,6 +45,16 @@ class LevelScene : virtual public AScene {
     std::vector<dl::Vector2f> _deadBodies;
     std::vector<dl::Sprite>   _deadBodySprites;
 
+    // Pause menu
+    bool            _paused;
+    size_t          _pauseMenuIndex;
+    dl::TextBuffer  _pauseTextBuffer;
+    dl::Text        _pauseTitleText;
+    dl::Text        _pauseResumeText;
+    dl::Text        _pauseLevelSelectText;
+    dl::Text        _pauseQuitText;
+    static constexpr size_t PAUSE_MENU_COUNT = 3;
+
     // Helper methods
     void respawnPlayer();
     bool checkDeadBodyCollision(const dl::Vector2f& pos, float& deadBodyY);
