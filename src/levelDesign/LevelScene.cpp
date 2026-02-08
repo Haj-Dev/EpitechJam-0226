@@ -60,5 +60,8 @@ void LevelScene::render(dl::RenderWindow& window) {
     window.display();
 
     window.clear(dl::BOTTOM_SCREEN, dl::Color(100, 100, 100));
+    window.draw(_background_bottom_sprite);
+    window.draw(*_menuButton);
+    window.draw(*_restartButton);
     window.display();
 }
