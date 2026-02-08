@@ -1,6 +1,10 @@
 #include "MenuScene.hpp"
+#include "../game.hpp"
+#include "../System.hpp"
 
 #include <array>
+
+MenuScene::MenuScene(game* gameInstance) : _game(gameInstance) {}
 
 void MenuScene::onEnter() {
     _background_bottom.loadFromFile("romfs:/assets/ui/background_lower.t3x");
@@ -13,7 +17,7 @@ void MenuScene::onEnter() {
     _button_sheet.loadFromFile("romfs:/assets/ui/button.t3x");
     _levelButtons.clear();
 
-    const dl::Vector2f               buttonSize(120.0f, 90.0f);
+    const dl::Vector2f               buttonSize(System::BUTTON_WIDTH, System::BUTTON_HEIGHT);
     const float                      columnSpacing = 20.0f;
     const float                      rowSpacing    = 12.0f;
     const float                      startX        = 30.0f;
@@ -30,7 +34,7 @@ void MenuScene::onEnter() {
         const float x      = startX + column * (buttonSize.x + columnSpacing);
         const float y      = startY + row * (buttonSize.y + rowSpacing);
         button.setPosition(dl::Vector2f(x, y));
-        button.onClick = nullptr;
+        button.onClick = [this, levelPath = paths[i]]() { _game->loadLevel(levelPath); };
         _levelButtons.push_back(std::move(button));
     }
 }

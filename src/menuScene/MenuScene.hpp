@@ -15,8 +15,11 @@
 #include "../levelDesign/levelDesign.hpp"
 #include "../ui/Button.hpp"
 
+class game;
+
 class MenuScene : virtual public AScene {
   public:
+    MenuScene(game* gameInstance);
     virtual ~MenuScene() = default;
 
     void onEnter() override;
@@ -25,6 +28,7 @@ class MenuScene : virtual public AScene {
     void render(dl::RenderWindow& window) override;
 
   private:
+    game*               _game;
     dl::SpriteSheet     _background_bottom;
     dl::Sprite          _background_bottom_sprite;
     dl::SpriteSheet     _background_top;
